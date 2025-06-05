@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Portal - Login</title>
+    <link rel="stylesheet" href="{% static 'portal/style.css' %}">
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <div class="brand-header">tailwebs.</div>
+        <div class="login-box">
+            <div class="login-header">Login</div>
+            {% if messages %}
+            <div class="warning">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            <form method="post" class="login-form" autocomplete="off">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <div class="form-group" style="text-align:right;">
+                    <span class="forgot-link">
+                        <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                    </span>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Forgot Password Modal -->
+    <div id="forgotModal" class="modal" style="display:none;">
+        <div class="modal-content"
+            style="width:350px; margin:auto; padding:30px; border-radius:10px; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+            <span class="close" style="float:right; cursor:pointer; font-size:22px;"
+                onclick="closeForgotModal()">&times;</span>
+            <div id="forgotStepEmail">
+                <h3>Forgot Password</h3>
+                <input type="email" id="resetEmail" placeholder="Enter your email"
+                    style="width:100%; margin-bottom:12px; padding:8px;">
+                <button onclick="sendResetCode()"
+                    style="width:100%; background:#222; color:#fff; padding:10px; border:none; border-radius:5px;">Send
+                    OTP</button>
+            </div>
+            <div id="forgotStepCode" style="display:none;">
+                <h3>Enter OTP & New Password</h3>
+                <input type="text" id="resetCode" placeholder="Enter OTP" maxlength="6"
+                    style="width:100%; margin-bottom:8px; padding:8px;">
+                <input type="password" id="resetPassword1" placeholder="New password"
+                    style="width:100%; margin-bottom:8px; padding:8px;">
+                <input type="password" id="resetPassword2" placeholder="Repeat new password"
+                    style="width:100%; margin-bottom:12px; padding:8px;">
+                <button onclick="verifyResetCodeAndUpdatePassword()"
+                    style="width:100%; background:#222; color:#fff; padding:10px; border:none; border-radius:5px;">Update
+                    Password</button>
+            </div>
+            <div id="forgotError" style="color:#d90429; margin-top:10px;"></div>
+        </div>
+    </div>
+    <script>
+        function openForgotModal() {
+            document.getElementById('forgotModal').style.display = 'block';
+            document.getElementById('forgotStepEmail').style.display = 'block';
+            document.getElementById('forgotStepCode').style.display = 'none';
+            document.getElementById('forgotError').innerText = '';
+        }
+        function closeForgotModal() {
+            document.getElementById('forgotModal').style.display = 'none';
+        }
+        // Step 1: Send OTP
+        function sendResetCode() {
+            const email = document.getElementById('resetEmail').value;
+            fetch('/send_reset_code/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: new URLSearchParams({ email })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        document.getElementById('forgotStepEmail').style.display = 'none';
+                        document.getElementById('forgotStepCode').style.display = 'block';
+                        document.getElementById('forgotError').innerText = '';
+                    } else {
+                        document.getElementById('forgotError').innerText = data.message;
+                    }
+                });
+        }
+        // Step 2: Verify OTP and update password
+        function verifyResetCodeAndUpdatePassword() {
+            const email = document.getElementById('resetEmail').value;
+            const code = document.getElementById('resetCode').value;
+            const password1 = document.getElementById('resetPassword1').value;
+            const password2 = document.getElementById('resetPassword2').value;
+            fetch('/verify_reset_code_and_update_password/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+                body: new URLSearchParams({ email, code, password1, password2 })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        document.getElementById('forgotError').style.color = 'green';
+                        document.getElementById('forgotError').innerText = 'Password updated! You can now login.';
+                        setTimeout(closeForgotModal, 2000);
+                    } else {
+                        document.getElementById('forgotError').style.color = '#d90429';
+                        document.getElementById('forgotError').innerText = data.message;
+                    }
+                });
+        }
+        // Helper for CSRF
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+        // Open modal on click
+        document.getElementById('forgotPasswordLink').addEventListener('click', function (e) {
+            e.preventDefault();
+            openForgotModal();
+        });
+    </script>
+</body>
+
+</html>

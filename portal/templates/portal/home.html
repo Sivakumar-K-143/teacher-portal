@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Portal - Home</title>
+    <link rel="stylesheet" href="{% static 'portal/style.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="brand-header">tailwebs.</div>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+        <h1 class="main-title">Student Listing</h1>
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr data-id="{{ student.id }}">
+                    <td class="name">{{ student.name }}</td>
+                    <td class="subject">{{ student.subject.name }}</td>
+                    <td class="marks">{{ student.marks }}</td>
+                    <td>
+                        <button class="editBtn">Edit</button>
+                        <button class="deleteBtn">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button id="addStudentBtn" class="add-student-btn">Add Student</button>
+    </div>
+
+    <!-- Add/Edit Student Modal -->
+    <div id="studentModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle">Add Student</h3>
+            <form id="studentForm">
+                {% csrf_token %}
+                <input type="hidden" id="studentId" name="studentId" value="">
+                <label for="name" class="student-label">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="subject">Subject:</label>
+                <select id="subject" name="subject"></select>
+                <input type="text" id="newSubject" name="newSubject" placeholder="Or enter new subject"
+                    style="display:none;">
+                <label for="marks">Marks:</label>
+                <input type="number" id="marks" name="marks" min="0" max="100" required>
+                <button type="submit" id="submitBtn">Save</button>
+            </form>
+            <div id="modalError" class="warning"></div>
+        </div>
+    </div>
+
+    <script src="{% static 'portal/script.js' %}"></script>
+</body>
+
+</html>

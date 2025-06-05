@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload Teachers CSV</title>
+</head>
+
+<body>
+    <h2>Upload Teachers CSV</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="csv_file" accept=".csv" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <!-- Feedback block: shows after upload -->
+    {% if messages %}
+    {% for message in messages %}
+    <div style="color: red; margin-top: 10px;">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+
+    {% if success %}
+    <div style="margin-top: 10px;">
+        <strong>Upload complete.</strong><br>
+        {% if added %}
+        <div>Added users: {{ added|join:", " }}</div>
+        {% else %}
+        <div>No new users were added (all usernames/emails already exist).</div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
