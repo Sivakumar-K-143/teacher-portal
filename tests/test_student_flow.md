@@ -16,7 +16,7 @@
 ### Positive
 - [ ] Home page lists all students with Name, Subject, Marks, Actions.
 - [ ] Add new student with valid name, subject, marks (0-100) → Student appears in list.
-- [ ] Add student with existing name and subject → Marks are incremented.
+- [ ] Add student with existing name and subject → Warning shown (use Edit to update marks).
 - [ ] Add student with existing name but new subject → New row is created.
 - [ ] Edit student inline (change name, subject, marks) → Updates in list.
 - [ ] Delete student → Row is removed.
@@ -26,6 +26,7 @@
 - [ ] Add student with empty fields → Error shown.
 - [ ] Edit student with invalid marks → Error shown.
 - [ ] Delete non-existent student (simulate) → Handled gracefully.
+- [ ] Add student with name not matching initials format → Error shown.
 
 ---
 
@@ -33,13 +34,14 @@
 
 - [ ] All standard subjects visible in dropdown.
 - [ ] Add a new subject via popup → Subject appears in dropdown next time.
+- [ ] Subject name auto-formats to capitalize first letter of each word.
 
 ---
 
 ## 4. Forgot Password Flow
 
 ### Positive
-- [ ] Click "Forgot password?", enter valid email → OTP sent (check console).
+- [ ] Click "Forgot password?", enter valid email → OTP sent (check console or email).
 - [ ] Enter correct OTP and new password (twice) → Password updated, can log in with new password.
 
 ### Negative
@@ -52,12 +54,21 @@
 ## 5. Teacher CSV Upload (Principal)
 
 ### Positive
-- [ ] Upload CSV with new teacher data → Users created, emails sent (check console).
+- [ ] Upload CSV with new teacher data → Users created, emails sent (check console or email).
 - [ ] Teacher can reset password after first login, CSV hash updated.
 
 ### Negative
 - [ ] Upload CSV with missing fields → Those rows skipped, others processed.
-- [ ] Upload CSV with duplicate username → Existing user not overwritten.
+- [ ] Upload CSV with duplicate username/email → Existing user not overwritten, warning shown.
+
+#### CSV Testing Instructions
+
+- For development, set in `settings.py`:
+    ```
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    ```
+  Use any dummy email address for testing. No real emails will be sent.
+- For real email testing, update SMTP settings and use a real email/app password.
 
 ---
 
@@ -75,6 +86,17 @@
 - [ ] Modals open and close as expected.
 - [ ] All error/success messages are clear.
 - [ ] Responsive design works on desktop and mobile.
+
+---
+
+## 8. Additional Use Cases (Implemented)
+
+- [ ] Student names are case-insensitively unique per subject.
+- [ ] Student name format enforced: "Firstname I I" or "Firstname I" (initials, spaces, no dots).
+- [ ] Marks must be between 0 and 100.
+- [ ] Login warns if username not found.
+- [ ] Initials shown in a circle beside student names.
+- [ ] Subject dropdown with "Add new subject..." option.
 
 ---
 
