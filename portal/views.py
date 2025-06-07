@@ -23,12 +23,10 @@ from .models import Student, Subject, PasswordResetCode
 
 def is_valid_student_name(name):
     parts = name.strip().split()
-    if len(parts) < 2:
+    if len(parts) < 1:
         return False
-    if not re.match(r'^[A-Z][a-z]+$', parts[0]):
-        return False
-    for part in parts[1:]:
-        if not re.match(r'^[A-Z]$', part):
+    for part in parts:
+        if not re.match(r'^[A-Z][a-z]*$', part):
             return False
     return True
 
@@ -82,33 +80,34 @@ def add_student(request):
         name = data.get('name', '').strip()
         subject_name = data.get('subject', '').strip()
         marks = data.get('marks')
+
         if not name or not subject_name or marks is None:
             return JsonResponse({'status': 'error', 'message': 'All fields are required.'}, status=400)
         try:
             marks = int(marks)
         except ValueError:
             return JsonResponse({'status': 'error', 'message': 'Marks must be a number.'}, status=400)
-        if marks < 0 or marks > 100:
-            return JsonResponse({'status': 'error', 'message': 'Marks must be between 0 and 100.'}, status=400)
 
-        # Normalize name (capitalize first name, initials uppercase)
-        name_parts = name.strip().split()
-        name_normalized = ""
-        if name_parts:
-            name_normalized = name_parts[0].capitalize() + (" " + " ".join([p.upper() for p in name_parts[1:]]) if len(name_parts) > 1 else "")
+        # Normalize name (capitalize each word)
+        name_normalized = ' '.join([part.capitalize() for part in name.strip().split()])
 
-        # Validate name format
+        # Validate name format (at least one word, each word capitalized)
         if not is_valid_student_name(name_normalized):
-            return JsonResponse({'status': 'error', 'message': 'Name should be like "Arun S S" or "Arun S". Initials must be single uppercase letters with spaces, no dots.'}, status=400)
+            return JsonResponse({'status': 'error','message': 'Each word in the name must start with a capital letter (e.g., "Arun", "Arun Kumar", "Arunkumar","Arunkumar S).'}, status=400)
 
         subject, _ = Subject.objects.get_or_create(name=subject_name)
 
-        # Case-insensitive check for existing student with same subject
-        if Student.objects.filter(name__iexact=name_normalized, subject=subject).exists():
-            return JsonResponse({'status': 'error', 'message': 'Student with this name and subject already exists (case-insensitive).'}, status=400)
-
-        student = Student.objects.create(name=name_normalized, subject=subject, marks=marks)
-        return JsonResponse({'status': 'created', 'student_id': student.id, 'marks': student.marks, 'subject': subject.name})
+        # Check if student with same name and subject exists (case-insensitive)
+        existing_student = Student.objects.filter(name__iexact=name_normalized, subject=subject).first()
+        if existing_student:
+            # Add (positive or negative) marks to existing marks
+            existing_student.marks += marks
+            existing_student.save()
+            return JsonResponse({'status': 'success', 'message': f'Student exists, marks updated to {existing_student.marks}.'})
+        else:
+            # Create new student
+            Student.objects.create(name=name_normalized, subject=subject, marks=marks)
+            return JsonResponse({'status': 'success', 'message': 'Student added.'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
@@ -129,8 +128,7 @@ def edit_student(request, student_id):
             marks = int(marks)
         except ValueError:
             return JsonResponse({'status': 'error', 'message': 'Marks must be a number.'}, status=400)
-        if marks < 0 or marks > 100:
-            return JsonResponse({'status': 'error', 'message': 'Marks must be between 0 and 100.'}, status=400)
+        # No range check for marks
 
         # Normalize name
         name_parts = name.strip().split()

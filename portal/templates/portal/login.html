@@ -13,13 +13,6 @@
         <div class="brand-header">companyname.</div>
         <div class="login-box">
             <div class="login-header">Login</div>
-            {% if messages %}
-            <div class="warning">
-                {% for message in messages %}
-                {{ message }}
-                {% endfor %}
-            </div>
-            {% endif %}
             <form method="post" class="login-form" autocomplete="off">
                 {% csrf_token %}
                 <div class="form-group">
@@ -38,7 +31,15 @@
                 <div class="form-group">
                     <button type="submit">Login</button>
                 </div>
+                {% if messages %}
+                <div class="warning" style="margin-top:10px;">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
             </form>
+
         </div>
     </div>
     <!-- Forgot Password Modal -->

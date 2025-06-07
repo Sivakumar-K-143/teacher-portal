@@ -15,18 +15,18 @@
 
 ### Positive
 - [ ] Home page lists all students with Name, Subject, Marks, Actions.
-- [ ] Add new student with valid name, subject, marks (0-100) → Student appears in list.
-- [ ] Add student with existing name and subject → Warning shown (use Edit to update marks).
+- [ ] Add new student with valid name (one or more words, each capitalized), subject, and marks (any integer) → Student appears in list.
+- [ ] Add student with existing name and subject → Marks are added to the existing student's marks (positive or negative), and a success message is shown.
 - [ ] Add student with existing name but new subject → New row is created.
 - [ ] Edit student inline (change name, subject, marks) → Updates in list.
 - [ ] Delete student → Row is removed.
 
 ### Negative
-- [ ] Add student with marks < 0 or > 100 → Error shown.
+- [ ] Add student with non-integer marks (e.g., "abc", "10.5") → Error shown.
 - [ ] Add student with empty fields → Error shown.
-- [ ] Edit student with invalid marks → Error shown.
+- [ ] Edit student with non-integer marks → Error shown.
 - [ ] Delete non-existent student (simulate) → Handled gracefully.
-- [ ] Add student with name not matching initials format → Error shown.
+- [ ] Add student with name not matching capitalization format (e.g., "arun", "arun Kumar", "arunkumar s") → Error shown.
 
 ---
 
@@ -93,9 +93,8 @@
 
 - [ ] Student names are case-insensitively unique per subject.
 - [ ] Student name format enforced: "Firstname I I" or "Firstname I" (initials, spaces, no dots).
-- [ ] Marks must be between 0 and 100.
+- [ ] Marks can be any integer (positive, zero, or negative).
 - [ ] Login warns if username not found.
-- [ ] Initials shown in a circle beside student names.
 - [ ] Subject dropdown with "Add new subject..." option.
 
 ---

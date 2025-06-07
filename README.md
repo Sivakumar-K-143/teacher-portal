@@ -8,11 +8,11 @@ Includes robust authentication, student CRUD, subject management, CSV teacher up
 ## 🚀 Features
 
 - **Secure Teacher Login**
-- **Student Management**: Add, edit, delete, and view students with subject and marks.
+- **Student Management**: Add, edit, delete, and view students with subject and marks. If a student with the same name and subject exists, the entered marks (positive or negative) are added to the existing marks.
 - **Subject Management**: Select from dropdown or add new subjects on the fly (auto-capitalized).
 - **Teacher CSV Upload**: Principal can bulk-upload teachers via CSV.
 - **Forgot Password**: OTP-based password reset (email integration).
-- **Role-based Access**: Only staff can upload teacher CSV.
+- **Role-based Access**: Only staff with superuser can upload teacher CSV.
 - **Modern UI/UX**: Responsive, clear error messages, modal dialogs.
 - **Security**: CSRF protection, password hashing, and more.
 
@@ -102,16 +102,17 @@ In `settings.py`, use:
 
 ## 🧑‍🎓 Student Name & Marks Validation
 
-- **Names:** Must be in the format "Firstname I I" or "Firstname I" (e.g., "Arun S S" or "Arun S"), where initials are single uppercase letters, separated by spaces, no dots.
-- **Marks:** Must be between 0 and 100 (inclusive).
-- **No duplicates:** Adding a student with the same name (case-insensitive) and subject shows a warning; use the edit button to update marks.
+- **Names:** Must be one or more words. Each word must start with a capital letter, and the rest must be lowercase. Examples: "Arun", "Arunkumar", "Arun Kumar","Arunkumar S".
+- **Marks:** Can be any integer (positive, zero, or negative). There is no upper or lower limit.
+- **Duplicate handling:** If you add a student with the same name (case-insensitive) and subject, the entered marks (positive or negative) will be **added to the existing marks** for that student and subject.
+
 
 ---
 
 ## 🛡️ Additional Enhancements (Beyond Requirements)
 
-- **Case-insensitive duplicate check** for student names.
-- **Strict name and marks validation** (not specified in requirements).
+- **Case-insensitive duplicate check** for student names and subject.
+- **Flexible name and marks validation**: Names can be one or more words, each starting with a capital letter. Marks can be any integer.
 - **User-friendly error messages** for login, student add/edit, and CSV upload.
 - **Login warns if username is not in the database.**
 - **Initials shown in a circle** beside student names in the UI.

@@ -1,4 +1,5 @@
 {% load static %}
+{% load portal_extras %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,8 +22,8 @@
         <table id="studentsTable">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Subject</th>
+                    <th class="name-header">Name</th>
+                    <th class="subject-header">Subject</th>
                     <th>Marks</th>
                     <th>Actions</th>
                 </tr>
@@ -30,8 +31,11 @@
             <tbody>
                 {% for student in students %}
                 <tr data-id="{{ student.id }}">
-                    <td class="name">{{ student.name }}</td>
-                    <td class="subject">{{ student.subject.name }}</td>
+                    <td class="name-cell">
+                        <span class="initials-circle">{{ student.name|initials }}</span>
+                        <span class="student-name">{{ student.name }}</span>
+                    </td>
+                    <td class="subject-cell">{{ student.subject.name }}</td>
                     <td class="marks">{{ student.marks }}</td>
                     <td>
                         <button class="editBtn">Edit</button>
@@ -41,7 +45,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        <button id="addStudentBtn" class="add-student-btn">Add Student</button>
+        <button id="addStudentBtn" class="add-student-btn">Add</button>
     </div>
 
     <!-- Add/Edit Student Modal -->
@@ -59,7 +63,7 @@
                 <input type="text" id="newSubject" name="newSubject" placeholder="Or enter new subject"
                     style="display:none;">
                 <label for="marks">Marks:</label>
-                <input type="number" id="marks" name="marks" min="0" max="100" required>
+                <input type="number" id="marks" name="marks" required>
                 <button type="submit" id="submitBtn">Save</button>
             </form>
             <div id="modalError" class="warning"></div>
